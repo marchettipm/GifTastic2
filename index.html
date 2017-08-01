@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Permanent+Marker" rel="stylesheet">
+
+
+  <title>GIF Safari!</title>
+  
+</head>
+
+<body>
+
+<div id="background">
+      <img src="http://wallpapercave.com/wp/skpLgf4.jpg" class="stretch" alt="" />
+  </div>
+
+   <h1 id="safari">GIF Safari!</h1>
+
+  <div class="container">
+    <div id="buttons">
+
+   
+
+    <div id="buttons-view"></div>
+
+    <form id="movie-form">
+      <label id= "Choise" for="animal-input" style="font-family: 'Permanent Marker'">Choose an animal...</label>
+      <input type="text" id="animal-input"><br>
+
+      <input id="add-animal" type="submit" value="Add to the Safari!">
+    </form>
+
+    </div>
+
+
+    <div id="animal-view"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      var animals = ["Panda", "Narwhal", "Grizzly Bear", "Bobcat"];
+
+      function displayAnimalInfo() {
+
+        var animal = $(this).attr("data-name");
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+        animal + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response) {
+
+          var div = $(".container").prepend("<div id='idDump'></div>");
+
+          $("#animal-view").empty();
+
+          for (var i = 0; i < response.data.length; i++){
+            animalHTML = "<figure id= 'fig'>";
+            animalHTML += "<img id = 'picture' "; 
+            animalHTML += "src = '" + response.data[i].images.fixed_height_still.url + "' ";
+            animalHTML += "data-still = '" + response.data[i].images.fixed_height_still.url + "' ";
+            animalHTML += "data-animate = '" + response.data[i].images.fixed_height.url + "' ";
+            animalHTML += "state = 'still' />";
+            animalHTML += "<figcaption>" + response.data[i].rating + "</figcaption></figure>";
+            $("#animal-view").append(animalHTML);
+             }
+             $( "img" ).hover(
+            function()
+            { 
+            var animateURL = $(this).attr("data-animate");  
+            $(this).attr("src", animateURL);
+            }, function() {
+             var stillURL = $(this).attr("data-still");
+             $(this).attr("src", stillURL); 
+            });
+          });
+
+      }
+
+      function renderButtons() {
+
+        
+        $("#buttons-view").empty();
+        
+        for (var i = 0; i < animals.length; i++) {
+
+          
+          var a = $("<button>");
+
+          a.addClass("animal");
+
+          a.attr("data-name", animals[i]);
+
+          a.text(animals[i]);
+
+          $("#buttons-view").append(a);
+        }
+      }
+
+
+
+      $("#add-animal").on("click", function(event) {
+        event.preventDefault();
+
+        var animal = $("#animal-input").val().trim();
+        console.log(animal);
+
+        animals.push(animal);
+
+        renderButtons();
+
+        $(this).empty();
+      });
+
+      
+
+      $(document).ready(function(){
+        renderButtons();
+        $(document).on("click", ".animal", displayAnimalInfo);
+
+                
+      });
+      
+
+
+    </script>
+  </div>
+</body>
+
+</html>
